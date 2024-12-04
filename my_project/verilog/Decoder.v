@@ -1,36 +1,31 @@
 
-module Decoder(
-    `ifdef USE_POWER_PINS
-        inout vdd,                  // Supply
-        inout vss,                  // GND
-    `endif
+//Decoder for a 3-Bit Flash ADC
 
-    input [8:0] io_in,              // Inputs
-    input wb_clk_i,                 // Clock
-    output [3:0] io_out,            // Outputs
+module my_project(
+    inout vdd,                      // Supply
+    inout vss,                      // GND
 
-    output [12:0] io_oeb 	     // Output Enable Bar
+    input [8:0] my_in,              // Inputs
+    input my_clk,                   // Clock
+    output [3:0] my_out             // Outputs
 );
 
 // Inputs
     wire [6:0] Comp;
     wire Samp;
 
-    assign Comp = io_in[6:0];      // Comparison signals
-    assign Samp = io_in[7];        // Sampling
+    assign Comp = my_in[6:0];      // Comparison signals
+    assign Samp = my_in[7];        // Sampling
 
     wire clk;
-    assign clk = wb_clk_i;         // Clock
+    assign clk = my_clk;         // Clock
 
 // Outputs
     reg eoc;
     reg [2:0] B;
 
-    assign io_out[2:0] = B;        // Bits
-    assign io_out[3] = eoc;        // End of Conversion
-
-    // Output enable logic
-    assign io_oeb = {{(9){1'b1}}, 4'b0};
+    assign my_out[2:0] = B;        // Bits
+    assign my_out[3] = eoc;        // End of Conversion
 
     // Decoder:
     // Next Bit value

@@ -1,7 +1,7 @@
 {
-    "DESIGN_NAME": "Decoder",
+    "DESIGN_NAME": "my_project",
     "VERILOG_FILES": "dir::Verilog/*.v",
-    "CLOCK_PORT": "clk",
+    "CLOCK_PORT": "my_clk",
     "CLOCK_PERIOD": 10.0,
     "VDD_NETS": ["vdd"],
     "GND_NETS": ["vss"]
