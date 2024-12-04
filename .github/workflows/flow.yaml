@@ -44,7 +44,7 @@ jobs:
       run: |
         # Last run is saved
         LAST_RUN_DIR=$(ls -d my_project/runs/RUN_* | sort | tail -n 1)
-        GDS_FILE="$LAST_RUN_DIR/final/gds/myproject.gds"
+        GDS_FILE="$LAST_RUN_DIR/final/gds/my_project.gds"
 
         if [ -f "$GDS_FILE" ]; then
           echo "GDS file found at: $GDS_FILE"

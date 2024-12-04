@@ -1,3 +1,0 @@
-
-15. Executing PROC_DLATCH pass (convert process syncs to latches).
-No latch inferred for signal `\my_project.\Bx' from process `\my_project.$proc$/foss/designs/RTL2GDS-in-Action/my_project/verilog/Decoder.v:34$1'.
