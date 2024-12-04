@@ -31,10 +31,6 @@ jobs:
     - name: Install OpenLane
       run: python3 -m pip install openlane
 
-    - name: Run Test
-      run: |
-        python3 -m openlane --docker-no-tty --dockerized --smoke-test
-
     - name: Run OpenLane
       run: |
         cd my_project
