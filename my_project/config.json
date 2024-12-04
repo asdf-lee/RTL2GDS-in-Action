@@ -2,7 +2,9 @@
     "DESIGN_NAME": "my_project",
     "VERILOG_FILES": "dir::verilog/*.v",
     "CLOCK_PORT": "my_clk",
-    "CLOCK_PERIOD": 10.0,
+    "CLOCK_PERIOD": 10,
+    "FP_SIZING": "absolute",
+    "DIE_AREA": "0 0 51 49",
     "VDD_NETS": ["vdd"],
     "GND_NETS": ["vss"]
   }

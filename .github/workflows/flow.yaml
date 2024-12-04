@@ -40,3 +40,22 @@ jobs:
         cd my_project
         python3 -m openlane --docker-no-tty --dockerized --flow Classic config.json
 
+    - name: Find and Upload GDS file
+      run: |
+        # Last run is saved
+        LAST_RUN_DIR=$(ls -d my_project/runs/RUN-* | sort | tail -n 1)
+        GDS_FILE="$LAST_RUN_DIR/final/gds/myproject.gds"
+
+        if [ -f "$GDS_FILE" ]; then
+          echo "GDS file found at: $GDS_FILE"
+          echo "gds_path=$GDS_FILE" >> $GITHUB_ENV
+        else
+          echo "Error: No GDS file found in the latest run directory!"
+          exit 1
+        fi
+
+    - name: Upload GDS file as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: myproject-gds
+        path: ${{ env.gds_path }}
