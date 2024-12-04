@@ -1,0 +1,5 @@
+`verilator_config
+lint_off -rule DECLFILENAME
+lint_off -rule EOFNEWLINE
+lint_off -rule UNDRIVEN -file "/foss/designs/RTL2GDS-in-Action/my_project/runs/RUN_2024-12-04_05-39-23/tmp/9906dceb71b748e9baae0c3889723d03.bb.v"
+lint_off -rule UNUSEDSIGNAL -file "/foss/designs/RTL2GDS-in-Action/my_project/runs/RUN_2024-12-04_05-39-23/tmp/9906dceb71b748e9baae0c3889723d03.bb.v"

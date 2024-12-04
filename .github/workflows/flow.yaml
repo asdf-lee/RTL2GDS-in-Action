@@ -43,7 +43,7 @@ jobs:
     - name: Find and Upload GDS file
       run: |
         # Last run is saved
-        LAST_RUN_DIR=$(ls -d my_project/runs/RUN-* | sort | tail -n 1)
+        LAST_RUN_DIR=$(ls -d my_project/runs/RUN_* | sort | tail -n 1)
         GDS_FILE="$LAST_RUN_DIR/final/gds/myproject.gds"
 
         if [ -f "$GDS_FILE" ]; then

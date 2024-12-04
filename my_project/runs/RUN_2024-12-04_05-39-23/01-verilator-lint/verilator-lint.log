@@ -1,0 +1,9 @@
+%Warning-UNUSEDSIGNAL: /foss/designs/RTL2GDS-in-Action/my_project/verilog/Decoder.v:8:17: Bits of signal are not used: 'my_in'[8]
+                                                                                        : ... note: In instance 'my_project'
+    8 |     input [8:0] my_in,               
+      |                 ^~~~~
+                       ... For warning description see https://verilator.org/warn/UNUSEDSIGNAL?v=5.030
+                       ... Use "/* verilator lint_off UNUSEDSIGNAL */" and lint_on around source to disable this message.
+- V e r i l a t i o n   R e p o r t: Verilator 5.030 2024-10-27 rev v5.030
+- Verilator: Built from 0.368 MB sources in 443 modules, into 0.032 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.063 s (elab=0.015, cvt=0.004, bld=0.000); cpu 0.063 s on 1 threads; alloced 27.938 MB
