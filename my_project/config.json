@@ -1,6 +1,6 @@
 {
     "DESIGN_NAME": "my_project",
-    "VERILOG_FILES": "dir::Verilog/*.v",
+    "VERILOG_FILES": "dir::verilog/*.v",
     "CLOCK_PORT": "my_clk",
     "CLOCK_PERIOD": 10.0,
     "VDD_NETS": ["vdd"],
