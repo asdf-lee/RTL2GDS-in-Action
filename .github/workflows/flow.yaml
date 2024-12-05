@@ -80,6 +80,6 @@ jobs:
 
     - name: Visualize GDS file
       uses: Gior-gio/gds-viewer/flow@main
-        with:
+      with:
           tools-repo: 'Gior-gio/gds-viewer' 
           tools-ref: 'main'
