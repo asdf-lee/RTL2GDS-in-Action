@@ -1,0 +1,162 @@
+name: 'GDS 2D and 3D'
+
+on:
+  workflow_run:
+    workflows: ["Digital Flow"]  
+    types:
+      - completed
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  GDS2PNG:
+    runs-on: ubuntu-20.04  # Configuración para Ubuntu 20.04
+
+    steps:
+
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Download gds artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: myproject-gds
+        
+    # Install packages for 'Render PNG from GDS' step:
+    - name: Install prerequisites
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: librsvg2-bin pngquant cairosvg
+        version: test
+
+    - name: Install Python dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install gdstk
+
+    - name: Copy GDS
+      run: |
+        mkdir gds
+        cp *.gds gds/
+
+    - name: Use gds2png script
+      run: |
+        python3 gds2png.py
+
+    - name: Upload gds_render (png) artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: gds_png
+        path: 'gds_render.png'
+
+  GDS2gTLF:
+    runs-on: ubuntu-20.04  # Configuración para Ubuntu 20.04
+    needs: GDS2PNG
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: GDS3D
+      uses: actions/checkout@v4
+      with:
+        repository: mbalestrini/GDS2glTF
+        path: GDS2glTF_repo
+
+    - name: Python version
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install numpy gdspy triangle pygltflib
+
+    - name: Rename GDS file
+      run: |
+        GDS_FILE=$(ls ./*.gds | head -n 1) 
+        if [ -z "$GDS_FILE" ]; then
+          echo "Error: No GDS file found in the gds/ directory."
+          exit 1
+        fi
+        cp "$GDS_FILE" ./GDS2glTF_repo/render.gds
+
+    - name: Convert GDS to GLTF
+      run: |
+        cd GDS2glTF_repo
+        python3 gds2gltf.py render.gds
+
+    - name: Upload gds_render (gtlf) artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: gds_gtlf
+        path: 'GDS2glTF_repo/render.gds.gltf'
+
+  GithubSite:
+    runs-on: ubuntu-20.04  # Configuración para Ubuntu 20.04
+    needs: GDS2gTLF
+
+    steps: 
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Create gh-pages directory
+      run: |
+        mkdir -p ./gh-pages
+
+    - name: Download gds_render (png) artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: gds_png
+        path: './gh-pages'
+
+    - name: Download gds_render (gtlf) artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: gds_gtlf
+        path: './gh-pages'
+
+    - name: Generate HTML pages that redirects to viewer
+      shell: bash
+      run: |
+        cat << EOF >> gh-pages/index.html
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Redirecting to GDS Viewer...</title>
+          </head>
+          <body>
+            <script>
+              location.href = "https://gds-viewer.tinytapeout.com/?model=" + encodeURIComponent(location.href + '/render.gds.gltf');
+            </script>
+          </body>
+          </html>
+        EOF
+
+    - name: Subir Pagina
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: 'gh-pages'
+    
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+    - name: Display preview in workflow summary
+      shell: bash
+      run: |
+        PAGE_URL=${{ steps.deployment.outputs.page_url }}
+        PAGE_URL=$(echo "$PAGE_URL" | sed -e 's/\/$//')
+        cat << EOF >> $GITHUB_STEP_SUMMARY
+        # 3D Viewer
+        [open 3D viewer](https://gds-viewer.tinytapeout.com/?model=$PAGE_URL/render.gds.gltf)
+
+        # 2D Preview
+        ![png]($PAGE_URL/gds_render.png)
+        EOF

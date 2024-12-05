@@ -55,31 +55,3 @@ jobs:
       with:
         name: myproject-gds
         path: ${{ env.gds_path }}
-
-  gds-viewer:
-    runs-on: ubuntu-20.04  # Configuración para Ubuntu 20.04
-    needs: install-and-test  # Asegura que el paso anterior se haya completado
-
-    steps:
-    - name: Check out 3DGDS-in-Action repository
-      uses: actions/checkout@v4
-      with:
-        repository: Gior-gio/3DGDS-in-Action
-        path: gds-viewer 
-
-    - name: Download GDS file artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: myproject-gds
-        path: './'  
-
-    - name: Replace existing .gds file
-      run: |
-        rm ./gds-viewer/*.gds  
-        cp mcdy_project.gds ./gds-viewer 
-
-    - name: Visualize GDS file
-      uses: Gior-gio/gds-viewer/flow@main
-      with:
-          tools-repo: 'Gior-gio/gds-viewer' 
-          tools-ref: 'main'
