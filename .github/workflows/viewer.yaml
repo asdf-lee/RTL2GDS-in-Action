@@ -1,9 +1,9 @@
-name: 'GDS 2D and 3D'
+name: 'GDS 2D-3D viewer'
 
 on:
   workflow_run:
     workflows:
-      - Digital Flow
+      - Digital flow
     types:
       - completed
 
@@ -20,9 +20,11 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v4
 
-    - name: Download gds artifact
-      uses: actions/download-artifact@v4
+    - name: Descargar GDS
+      uses: dawidd6/action-download-artifact@v7
       with:
+        workflow: flow.yaml
+        workflow_conclusion: success
         name: myproject-gds
         
     # Install packages for 'Render PNG from GDS' step:
@@ -39,6 +41,7 @@ jobs:
 
     - name: Copy GDS
       run: |
+        ls
         mkdir gds
         cp *.gds gds/
 
