@@ -79,4 +79,7 @@ jobs:
         cp mcdy_project.gds ./gds-viewer 
 
     - name: Visualize GDS file
-      uses: Gior-gio/gds-viewer/flow
+      uses: Gior-gio/gds-viewer/flow@main
+        with:
+          tools-repo: 'Gior-gio/gds-viewer' 
+          tools-ref: 'main'
