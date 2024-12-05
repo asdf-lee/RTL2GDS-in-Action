@@ -2,7 +2,8 @@ name: 'GDS 2D and 3D'
 
 on:
   workflow_run:
-    workflows: ["Digital Flow"]  
+    workflows:
+      - Digital Flow
     types:
       - completed
 
