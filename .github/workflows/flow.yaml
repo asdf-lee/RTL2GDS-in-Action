@@ -1,9 +1,7 @@
 name: Digital flow
 
 on:
-  push:
-    branches:
-      - main  # Trigger the workflow when changes are pushed to the main branch
+  workflow_dispatch: # Trigger manually
 
 jobs:
   install-and-test:
