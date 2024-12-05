@@ -76,7 +76,7 @@ jobs:
     - name: Replace existing .gds file
       run: |
         rm ./gds-viewer/*.gds  
-        cp my_project.gds ./gds-viewer 
+        cp mcdy_project.gds ./gds-viewer 
 
     - name: Visualize GDS file
-      uses: gds-viewer/flow
+      uses: Gior-gio/gds-viewer/flow
