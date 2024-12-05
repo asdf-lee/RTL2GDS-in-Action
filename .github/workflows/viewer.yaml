@@ -59,8 +59,12 @@ jobs:
     needs: GDS2PNG
 
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
+    - name: Descargar GDS
+      uses: dawidd6/action-download-artifact@v7
+      with:
+        workflow: flow.yaml
+        workflow_conclusion: success
+        name: myproject-gds
 
     - name: GDS3D
       uses: actions/checkout@v4
