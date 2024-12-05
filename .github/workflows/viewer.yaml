@@ -41,7 +41,6 @@ jobs:
 
     - name: Copy GDS
       run: |
-        ls
         mkdir gds
         cp *.gds gds/
 
