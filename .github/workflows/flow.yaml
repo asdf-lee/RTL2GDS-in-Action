@@ -51,12 +51,15 @@ jobs:
     - name: Find and Upload GDS file
       run: |
         # Identify the latest run directory
-        LAST_RUN_DIR=$(ls -d my_project/runs/RUN_* | sort | tail -n 1)
-        # Define the expected GDS file path
-        GDS_FILE="$LAST_RUN_DIR/final/gds/my_project.gds"
+        LAST_RUN_DIR=$(ls -d ${{ github.workspace }}/my_project/runs/RUN_* | sort | tail -n 1)
+        # Find any GDS file in the final/gds/ directory
+        GDS_FILE=$(find "$LAST_RUN_DIR/final/gds" -type f -name "*.gds" | head -n 1)
 
-        if [ -f "$GDS_FILE" ]; then
-          # If the GDS file exists, set its path as an environment variable
+        echo ">> Aquí está el contenido de la carpeta final/gds:"
+        ls "$LAST_RUN_DIR/final/gds/"
+
+        if [ -n "$GDS_FILE" ]; then
+          # If a GDS file is found, set its path as an environment variable
           echo "GDS file found at: $GDS_FILE"
           echo "gds_path=$GDS_FILE" >> $GITHUB_ENV
         else
