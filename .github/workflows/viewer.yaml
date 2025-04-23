@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   GDS2PNG:
-    runs-on: ubuntu-22.04  # Use Ubuntu 20.04 environment
+    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 environment
 
     steps:
     # Step 1: Checkout the repository
@@ -60,7 +60,7 @@ jobs:
         path: 'gds_render.png'
 
   GDS2gTLF:
-    runs-on: ubuntu-20.04  # Use Ubuntu 20.04 environment
+    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 environment
     needs: GDS2PNG  # Requires the GDS2PNG job to complete first
 
     steps:
@@ -115,7 +115,7 @@ jobs:
         path: 'GDS2glTF_repo/render.gds.gltf'
 
   GithubSite:
-    runs-on: ubuntu-20.04  # Use Ubuntu 20.04 environment
+    runs-on: ubuntu-22.04  # Use Ubuntu 22.04 environment
     needs: GDS2gTLF  # Requires the GDS2gTLF job to complete first
 
     steps: 
