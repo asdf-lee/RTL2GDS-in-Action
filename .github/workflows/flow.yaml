@@ -5,7 +5,7 @@ on:
 
 jobs:
   install-and-run:
-    runs-on: ubuntu-20.04  # Use Ubuntu 20.04 environment for the workflow
+    runs-on: ubuntu-22.04  # Use Ubuntu 20.04 environment for the workflow
 
     steps:
     # Step 1: Check out the repository
