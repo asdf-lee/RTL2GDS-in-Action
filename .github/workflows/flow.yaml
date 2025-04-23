@@ -21,7 +21,7 @@ jobs:
     # Step 3: Install required system packages
     - name: Install required packages
       run: |
-        sudo apt install -y build-essential python3 python3-venv python3-pip python3-tk curl make git docker.io
+        sudo apt install -y build-essential python3 python3-venv python3-pip python3-tk curl make git
         # build-essential: Compilation tools
         # python3, python3-venv, python3-pip: Python setup
         # python3-tk: Required for graphical Python applications
