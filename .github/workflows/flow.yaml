@@ -68,9 +68,26 @@ jobs:
           exit 1
         fi
 
-    # Step 8: Upload the GDS file as an artifact
+    # Step 8: Convert GDS to PNG using KLayout
+    - name: Convert GDS to PNG
+      run: |
+        sudo apt-get install -y klayout
+        PNG_OUT=${{ github.workspace }}/my_project/layout.png
+        echo "Generating PNG from ${{ env.gds_path }}..."
+        klayout -b -rd in=${{ env.gds_path }} -rd out=$PNG_OUT -r 'layout = pya.Layout(); layout.read($in); layout.write_image($out, 4000, 4000);'
+        echo "PNG generated at: $PNG_OUT"
+        echo "png_path=$PNG_OUT" >> $GITHUB_ENV
+
+    # Step 9: Upload the GDS file as an artifact
     - name: Upload GDS file as artifact
       uses: actions/upload-artifact@v4
       with:
         name: myproject-gds  # Artifact name for identification
         path: ${{ env.gds_path }}  # Use the path saved in the environment variable
+
+    # Step 10: Upload PNG as artifact
+    - name: Upload PNG as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: myproject-png
+        path: ${{ env.png_path }}
