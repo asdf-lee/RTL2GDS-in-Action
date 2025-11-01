@@ -1,0 +1,93 @@
+name: Digital flow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  install-and-run:
+    runs-on: ubuntu-22.04
+
+    steps:
+    # Checkout
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    # System update
+    - name: Update and upgrade system
+      run: |
+        sudo apt-get update
+        sudo apt-get upgrade -y
+
+    # Install deps
+    - name: Install required packages
+      run: |
+        sudo apt install -y build-essential python3 python3-venv python3-pip python3-tk curl make git docker.io
+
+    # Verify installations
+    - name: Verify Docker & Python
+      run: |
+        docker --version
+        python3 --version
+        python3 -m pip --version
+
+    # Install OpenLane Python wrapper
+    - name: Install OpenLane
+      run: python3 -m pip install openlane
+
+    # Run OpenLane
+    - name: Run OpenLane
+      run: |
+        cd my_project
+        python3 -m openlane --docker-no-tty config.json
+
+    # Find last run directory
+    - name: Identify latest run folder
+      run: |
+        LAST_RUN_DIR=$(ls -d ${{ github.workspace }}/my_project/runs/RUN_* | sort | tail -n 1)
+        echo "render_dir=$LAST_RUN_DIR" >> $GITHUB_ENV
+        echo "Latest run at $LAST_RUN_DIR"
+
+    # Rename render PNGs by stage name
+    - name: Rename KLayout PNGs (stage-based)
+      run: |
+        RUN_DIR="${{ env.render_dir }}"
+        find "$RUN_DIR" -name "*.png" | while read f; do
+          step_dir=$(basename "$(dirname "$(dirname "$f")")")
+          new_name="${step_dir}.png"
+          mv "$f" "$(dirname "$f")/$new_name"
+          echo "Renamed: $f → $new_name"
+        done
+
+    # Zip renders
+    - name: Create render ZIP
+      run: |
+        RUN_DIR="${{ env.render_dir }}"
+        cd "$RUN_DIR"
+        zip -r klayout-renders.zip */klayout/*.png */*/klayout/*.png || true
+        echo "Render ZIP created"
+
+    # Install KLayout
+    - name: Install KLayout
+      run: sudo apt-get install -y klayout
+
+    # Convert GDS → PNG
+    - name: Convert final GDS to PNG
+      run: |
+        RUN_DIR="${{ env.render_dir }}"
+        GDS_FILE=$(find "$RUN_DIR/final/gds" -type f -name "*.gds" | head -n 1)
+        PNG_OUT=${{ github.workspace }}/my_project/final-layout.png
+        echo "gds_path=$GDS_FILE" >> $GITHUB_ENV
+        echo "png_path=$PNG_OUT" >> $GITHUB_ENV
+
+        klayout -b -rd in=$GDS_FILE -rd out=$PNG_OUT \
+          -r 'layout = pya.Layout(); layout.read($in); layout.write_image($out, 4000, 4000);'
+
+    # Upload artifacts
+    - name: Upload all artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: openlane-results
+        path: |
+          ${{ env.render_dir }}/klayout-renders.zip
+          ${{ env.gds_path }}
+          ${{ env.png_path }}
