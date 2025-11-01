@@ -1,4 +1,4 @@
-name: Digital flow
+name: Digital flow test
 
 on:
   workflow_dispatch:
