@@ -43,7 +43,7 @@ jobs:
     - name: Run OpenLane
       run: |
         cd my_project
-        python3 -m openlane --docker-no-ttyconfig.json
+        python3 -m openlane --docker-no-tty config.json
 
     # Step 7: Locate GDS file
     - name: Find and save GDS file and RUN directory
