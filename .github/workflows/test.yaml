@@ -43,7 +43,7 @@ jobs:
     - name: Run OpenLane
       run: |
         cd my_project
-        sak-pdk sky130A
+        python3 -m sak-pdk sky130A
         python3 -m openlane config.json
 
     # Step 7: Locate GDS file
