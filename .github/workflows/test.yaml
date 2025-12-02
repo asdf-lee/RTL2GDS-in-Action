@@ -37,7 +37,7 @@ jobs:
 
     # Step 5: Install OpenLane
     - name: Install OpenLane
-      run: python3 -m pip install openlane
+      run: python3 -m pip install openlane==2.3.10
 
     # Step 6: Run OpenLane
     - name: Run OpenLane
