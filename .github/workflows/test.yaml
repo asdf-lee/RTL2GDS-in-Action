@@ -136,7 +136,7 @@ jobs:
         mkdir -p Graphs
     
         # Ejecutar Yosys dentro del contenedor Docker de OpenLane
-        python3 -m openlane --docker-no-tty --dockerized bash -lc "
+        python3 -m openlane --dockerized --shell "
           yosys -p '
             read_verilog $SYN_V
             hierarchy -auto-top
