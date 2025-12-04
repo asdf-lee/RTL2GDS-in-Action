@@ -128,7 +128,7 @@ jobs:
       run: |
     
         # Obtener la carpeta del último RUN creada previamente
-        SYN_DIR="${{ env.last_run_dir }}/results/synthesis"
+        SYN_DIR="${{ env.last_run_dir }}/02-yosys-synthesis"
     
         echo "Synthesis directory: $SYN_DIR"
         ls "$SYN_DIR"
