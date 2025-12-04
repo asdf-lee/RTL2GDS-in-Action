@@ -66,38 +66,45 @@ jobs:
         fi
 
     # Step 8: Collect KLayout Render PNGs (out.png) + final PNG if present
-    - name: Collect KLayout renders and final PNG
+    - name: Collect and rename KLayout renders by step
       run: |
         mkdir -p Imgs
     
         echo "Searching for all out.png renders..."
     
-        # Buscar y ORDENAR todos los renders
-        renders=($(find "${{ github.workspace }}/my_project/runs" -type f -name "out.png" | sort))
+        # Buscar todos los archivos 'out.png'
+        find "${{ github.workspace }}/my_project/runs" -type f -name "out.png" 2>/dev/null \
+          | while read file; do
+            
+            # Obtener carpeta padre
+            folder=$(dirname "$file")
+            folder_base=$(basename "$folder")
     
-        echo "Found ${#renders[@]} renders"
+            echo "Found render in folder: $folder_base"
     
-        # Asignar nombres semánticos según el orden
-        if [ ${#renders[@]} -ge 1 ]; then
-          cp "${renders[0]}" Imgs/Post_GeneratePDN.png
-        fi
-        
-        if [ ${#renders[@]} -ge 2 ]; then
-          cp "${renders[1]}" Imgs/Post_DetailedPlacement.png
-        fi
+            # Nombre por defecto
+            newname="unknown.png"
     
-        if [ ${#renders[@]} -ge 3 ]; then
-          cp "${renders[2]}" Imgs/Post_DetailedRouting.png
-        fi
-
-        # PNG final → Final_Layout.png
-        if [ -n "${{ env.png_path }}" ] && [ -f "${{ env.png_path }}" ]; then
-          echo "Copying final PNG ${{ env.png_path }} → Imgs/Final_Layout.png"
-          cp "${{ env.png_path }}" Imgs/Final_Layout.png
-        else
-          echo "No final PNG found or path missing."
-        fi
-  
+            # MAPEO según paso OpenLane
+            case "$folder_base" in
+              *generate-pdn* )
+                newname="Post_GeneratePDN.png"
+                ;;
+              *detailed-placement* )
+                newname="Post_DetailedPlacement.png"
+                ;;
+              *detailed-routing* )
+                newname="Post_DetailedRouting.png"
+                ;;
+              *fill-insertion* )
+                newname="Post_FillInsertion.png"
+                ;;
+            esac
+    
+            echo "Renaming to Imgs/$newname"
+            cp "$file" "Imgs/$newname"
+          done
+    
         echo "Listing collected images:"
         ls -1 Imgs || true
 
