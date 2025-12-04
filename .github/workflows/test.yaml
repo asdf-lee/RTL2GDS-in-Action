@@ -21,7 +21,7 @@ jobs:
     # Step 3: Install required system packages
     - name: Install required packages
       run: |
-        sudo apt install -y build-essential python3 python3-venv python3-pip python3-tk curl make git graphviz
+        sudo apt install -y build-essential python3 python3-venv python3-pip python3-tk curl make git
         # build-essential: Compilation tools
         # python3, python3-venv, python3-pip: Python setup
         # python3-tk: Required for graphical Python applications
@@ -123,44 +123,36 @@ jobs:
         path: Imgs/
         if-no-files-found: warn
 
-    # Step 11: Generate Yosys GraphViz diagram
+    # Step 11: Generate Yosys Synthesis using GraphViz diagram
     - name: Generate Yosys GraphViz diagram
       run: |
+        sudo apt-get install -y graphviz
     
-        # Obtener la carpeta del último RUN creada previamente
         SYN_DIR="${{ env.last_run_dir }}/02-yosys-synthesis"
-    
-        echo "Synthesis directory: $SYN_DIR"
-        ls "$SYN_DIR"
-    
-        # Archivo Verilog sintetizado
         SYN_V=$(find "$SYN_DIR" -name "*.v" | head -n 1)
     
-        if [ -z "$SYN_V" ]; then
-          echo "Error: No synthesized Verilog found."
-          exit 1
-        fi
+        echo "Using synthesized netlist: $SYN_V"
     
         mkdir -p Graphs
     
-        echo "Running Yosys to generate GraphViz DOT file..."
+        # Ejecutar Yosys dentro del contenedor Docker de OpenLane
+        python3 -m openlane --docker-no-tty --dockerized bash -lc "
+          yosys -p '
+            read_verilog $SYN_V
+            hierarchy -auto-top
+            proc; opt
+            show -format dot -prefix /project/Graphs/yosys_graph
+          '
+        "
     
-        yosys -p "
-          read_verilog $SYN_V
-          hierarchy -auto-top
-          proc; opt
-          show -format dot -prefix graphviz_yosys
-        " || true
-    
-        # Convertir el DOT a PNG
-        if [ -f graphviz_yosys.dot ]; then
-          dot -Tpng graphviz_yosys.dot -o Graphs/Yosys_Synthesis_Graph.png
-          echo "Graph generated: Graphs/Yosys_Synthesis_Graph.png"
+        # Convertir DOT → PNG (en host)
+        if [ -f Graphs/yosys_graph.dot ]; then
+          dot -Tpng Graphs/yosys_graph.dot -o Graphs/Yosys_Synthesis_Graph.png
+          echo 'Graph generated: Graphs/Yosys_Synthesis_Graph.png'
         else
-          echo "No DOT file generated."
+          echo 'Error: DOT file missing.'
+          ls -l Graphs
         fi
-    
-        ls -l Graphs
 
     # Step 12: Upload Synthesis Schematic generated from Graphviz
     - name: Upload Yosys GraphViz diagram
