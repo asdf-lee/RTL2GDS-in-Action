@@ -31,36 +31,42 @@ jobs:
     # Step 4: Verify installations
     - name: Verify Docker and Python installations
       run: |
-        docker --version
-        python3 --version
-        python3 -m pip --version
+        docker --version  # Check Docker installation
+        python3 --version  # Check Python installation
+        python3 -m pip --version  # Check pip installation
 
     # Step 5: Install OpenLane
     - name: Install OpenLane
       run: python3 -m pip install openlane
+      # OpenLane is a complete open-source RTL-to-GDSII flow
 
     # Step 6: Run OpenLane
     - name: Run OpenLane
       run: |
-        cd my_project
+        cd my_project # Change directory to the project folder
         python3 -m openlane --docker-no-tty --dockerized config.json
+        # Run the OpenLane flow in Docker using Custom Sequential Flow with the provided config.json
 
     # Step 7: Locate GDS file
     - name: Find and save GDS file and RUN directory
       run: |
+        # Identify the latest run directory
         LAST_RUN_DIR=$(ls -d ${{ github.workspace }}/my_project/runs/RUN_* | sort | tail -n 1)
         echo "Last run directory: $LAST_RUN_DIR"
 
+        # Find any GDS file in the final/gds/ directory
         GDS_FILE=$(find "$LAST_RUN_DIR/final/gds" -type f -name "*.gds" | head -n 1)
 
         echo ">> Contents of final/gds:"
         ls "$LAST_RUN_DIR/final/gds/"
 
         if [ -n "$GDS_FILE" ]; then
+          #If a GDS file is found, set its path as an environment variable
           echo "GDS file found: $GDS_FILE"
           echo "gds_path=$GDS_FILE" >> $GITHUB_ENV
           echo "last_run_dir=$LAST_RUN_DIR" >> $GITHUB_ENV
         else
+          # Exit with an error if no GDS is found
           echo "Error: No GDS file found!"
           exit 1
         fi
@@ -69,31 +75,32 @@ jobs:
     - name: Collect and rename KLayout renders by step
       run: |
         mkdir -p Imgs
-    
+        
         echo "Searching and ordering all out.png renders..."
-    
+
+        # Search files with name "out.png" and sort them.
         mapfile -t renders < <(find "${{ github.workspace }}/my_project/runs" -type f -name "out.png" | sort)
-    
+
+        # Save the files in a bash array called renders
         echo "Found ${#renders[@]} renders:"
         printf '%s\n' "${renders[@]}"
     
         echo "Renaming by processing step..."
-    
-        # Post steps
+
         if [ ${#renders[@]} -ge 1 ]; then
-          cp "${renders[0]}" Imgs/Post_GeneratePDN.png
+          cp "${renders[0]}" Imgs/1_Post_GeneratePDN.png 
         fi
     
         if [ ${#renders[@]} -ge 2 ]; then
-          cp "${renders[1]}" Imgs/Post_DetailedPlacement.png
+          cp "${renders[1]}" Imgs/2_Post_DetailedPlacement.png
         fi
     
         if [ ${#renders[@]} -ge 3 ]; then
-          cp "${renders[2]}" Imgs/Post_DetailedRouting.png
+          cp "${renders[2]}" Imgs/3_Post_DetailedRouting.png
         fi
     
         if [ ${#renders[@]} -ge 4 ]; then
-          cp "${renders[3]}" Imgs/Final_Layout.png
+          cp "${renders[3]}" Imgs/4_Final_Layout.png
         fi
     
         ls -l Imgs
