@@ -135,19 +135,16 @@ jobs:
     
         mkdir -p Graphs
     
-        # Ejecutar Yosys dentro del contenedor Docker de OpenLane
-        python3 -m openlane --dockerized --shell "
-          yosys -q -p '
-            read_verilog $SYN_V
-            hierarchy -auto-top
-            proc; opt
-            show -format dot -prefix /project/Graphs/yosys_graph
-          '
-        "
+        yosys - p'
+          read_verilog $SYN_V;
+          hierarchy -auto-top;
+          proc; opt;
+          show -format dot -prefix /project/Graphs/yosys_graph
+        '
     
         # Convertir DOT → PNG (en host)
         if [ -f Graphs/yosys_graph.dot ]; then
-          dot -Tpng Graphs/yosys_graph.dot -o Graphs/Yosys_Synthesis_Graph.png
+          dot -Tpng Graphs/yosys_graph.dot > Graphs/Yosys_Synthesis_Graph.png
           echo 'Graph generated: Graphs/Yosys_Synthesis_Graph.png'
         else
           echo 'Error: DOT file missing.'
