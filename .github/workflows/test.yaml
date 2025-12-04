@@ -137,7 +137,7 @@ jobs:
     
         # Ejecutar Yosys dentro del contenedor Docker de OpenLane
         python3 -m openlane --dockerized --shell "
-          yosys -p '
+          yosys -q -p '
             read_verilog $SYN_V
             hierarchy -auto-top
             proc; opt
