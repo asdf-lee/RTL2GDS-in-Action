@@ -71,22 +71,26 @@ jobs:
         mkdir -p Imgs
         i=1
         echo "Searching for all out.png renders..."
-        # Use find relative to workspace to avoid surprises
-        for file in $(find ${{ github.workspace }}/my_project/runs -type f -name "out.png" 2>/dev/null || true); do
-          echo "Found render: $file"
-          cp "$file" "Imgs/out_$i.png"
-          i=$((i+1))
-        done
-
-        # If final PNG was created, copy it too
+    
+        # Buscar todos los out.png, ORDENARLOS, y copiarlos
+        find "${{ github.workspace }}/my_project/runs" -type f -name "out.png" 2>/dev/null \
+          | sort \
+          | while read file; do
+              echo "Found render: $file"
+              cp "$file" "Imgs/out_$i.png"
+              i=$((i+1))
+            done
+    
+        # Copiar PNG final si existe
         if [ -n "${{ env.png_path }}" ] && [ -f "${{ env.png_path }}" ]; then
-          echo "Copying final PNG ${env.png_path} to Imgs/final_layout.png"
+          echo "Copying final PNG ${{ env.png_path }} to Imgs/final_layout.png"
           cp "${{ env.png_path }}" Imgs/final_layout.png
         else
           echo "No final PNG to copy (env.png_path is empty or file missing)."
         fi
-
-        ls -l Imgs || true
+    
+        echo "Listing collected images:"
+        ls -1 Imgs || true
 
     # Step 9: Upload GDS
     - name: Upload GDS file as artifact
