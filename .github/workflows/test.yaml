@@ -65,17 +65,6 @@ jobs:
           exit 1
         fi
 
-    # Step 8: Convert GDS to PNG
-    - name: Convert GDS to PNG with KLayout
-      run: |
-        sudo apt-get install -y klayout
-        PNG_OUT=${{ github.workspace }}/my_project/final_layout.png
-
-        echo "Generating PNG..."
-        klayout -b -rd in=${{ env.gds_path }} -rd out=$PNG_OUT -r 'layout = pya.Layout(); layout.read($in); layout.write_image($out, 4000, 4000);'
-
-        echo "png_path=$PNG_OUT" >> $GITHUB_ENV
-
     # Step 9: Collect all KLayout renders (out.png)
     - name: Collect KLayout Render PNGs
       run: |
