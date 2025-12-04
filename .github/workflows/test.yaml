@@ -71,18 +71,11 @@ jobs:
         mkdir -p Imgs
     
         echo "Searching and ordering all out.png renders..."
-        
+    
         mapfile -t renders < <(find "${{ github.workspace }}/my_project/runs" -type f -name "out.png" | sort)
     
         echo "Found ${#renders[@]} renders:"
         printf '%s\n' "${renders[@]}"
-    
-        echo "Copying sequential out_*.png..."
-        i=1
-        for f in "${renders[@]}"; do
-          cp "$f" "Imgs/out_$i.png"
-          i=$((i+1))
-        done
     
         echo "Renaming by processing step..."
     
