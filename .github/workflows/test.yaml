@@ -90,9 +90,16 @@ jobs:
           cp "${renders[2]}" Imgs/Post_DetailedRouting.png
         fi
 
-        if [ ${#renders[@]} -ge 4 ]; then
-          cp "${renders[2]}" Imgs/Final_Layout.png
+        # PNG final → Final_Layout.png
+        if [ -n "${{ env.png_path }}" ] && [ -f "${{ env.png_path }}" ]; then
+          echo "Copying final PNG ${{ env.png_path }} → Imgs/Final_Layout.png"
+          cp "${{ env.png_path }}" Imgs/Final_Layout.png
+        else
+          echo "No final PNG found or path missing."
         fi
+  
+        echo "Listing collected images:"
+        ls -1 Imgs || true
 
     # Step 9: Upload GDS
     - name: Upload GDS file as artifact
