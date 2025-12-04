@@ -65,26 +65,32 @@ jobs:
           exit 1
         fi
 
-    # Step 8: Collect KLayout Render PNGs (out.png) + final PNG if present
+    # Step 8: Collect and rename KLayout renders by step
     - name: Collect and rename KLayout renders by step
       run: |
         mkdir -p Imgs
-        i=1
     
-        echo "Searching for all out.png renders..."
+        echo "Searching and ordering all out.png renders..."
         
-        # Buscar todos los archivos 'out.png'
-        find "${{ github.workspace }}/my_project/runs" -type f -name "out.png" \
-        | sort \
-        | while read file; do
-            cp "$file" "Imgs/out_$i.png"
-            i=$((i+1))
-          done
-
+        mapfile -t renders < <(find "${{ github.workspace }}/my_project/runs" -type f -name "out.png" | sort)
+    
+        echo "Found ${#renders[@]} renders:"
+        printf '%s\n' "${renders[@]}"
+    
+        echo "Copying sequential out_*.png..."
+        i=1
+        for f in "${renders[@]}"; do
+          cp "$f" "Imgs/out_$i.png"
+          i=$((i+1))
+        done
+    
+        echo "Renaming by processing step..."
+    
+        # Post steps
         if [ ${#renders[@]} -ge 1 ]; then
           cp "${renders[0]}" Imgs/Post_GeneratePDN.png
         fi
-        
+    
         if [ ${#renders[@]} -ge 2 ]; then
           cp "${renders[1]}" Imgs/Post_DetailedPlacement.png
         fi
@@ -92,10 +98,13 @@ jobs:
         if [ ${#renders[@]} -ge 3 ]; then
           cp "${renders[2]}" Imgs/Post_DetailedRouting.png
         fi
-
+    
         if [ ${#renders[@]} -ge 4 ]; then
-          cp "${renders[2]}" Imgs/Final_Layout.png
+          cp "${renders[3]}" Imgs/Final_Layout.png
         fi
+    
+        ls -l Imgs
+
 
     # Step 9: Upload GDS
     - name: Upload GDS file as artifact
