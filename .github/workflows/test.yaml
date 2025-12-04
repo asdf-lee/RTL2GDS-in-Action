@@ -69,7 +69,7 @@ jobs:
     - name: Collect and rename KLayout renders by step
       run: |
         mkdir -p Imgs
-        i = 1
+        i=1
     
         echo "Searching for all out.png renders..."
         
