@@ -135,7 +135,7 @@ jobs:
     
         mkdir -p Graphs
     
-        python3 -m yosys - p'
+        python3 -m yosys -p '
           read_verilog $SYN_V;
           hierarchy -auto-top;
           proc; opt;
